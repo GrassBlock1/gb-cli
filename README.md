@@ -12,7 +12,7 @@ go build .
 ```
 ## Usage
 ```
-➜ go run .
+➜ gb
 gb is a cli tool for everyday tasks - base32/64/85 encoding/decoding, getting quotes, etc
 
 Usage:
@@ -27,6 +27,7 @@ Available Commands:
   completion  Generate the autocompletion script for the specified shell
   get         Get things from the Internet
   help        Help about any command
+  matrix      Get information of a matrix homeserver
   passwd      Generate a memorable secure password
   rand        Get real random number from multiple sources
 

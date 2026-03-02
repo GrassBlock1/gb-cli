@@ -3,6 +3,7 @@ package cmd
 import (
 	"encoding/json"
 	"fmt"
+	"log"
 	"net/http"
 	"strings"
 	"unicode/utf8"
@@ -61,13 +62,13 @@ func init() {
 func getSentenceFromHitokoto() string {
 	resp, err := http.Get("https://v1.hitokoto.cn")
 	if err != nil {
-		panic(err)
+		log.Fatal(err)
 	}
 	defer resp.Body.Close()
 	var data interface{}
 	e := json.NewDecoder(resp.Body).Decode(&data)
 	if e != nil {
-		panic(e)
+		log.Fatal(e)
 	}
 	dMap := data.(map[string]interface{})
 	sentence := dMap["hitokoto"].(string)
@@ -80,13 +81,13 @@ func getSentenceFromHitokoto() string {
 func getSentenceFromSelf() string {
 	resp, err := http.Get("https://gb0.dev/g/quotes")
 	if err != nil {
-		panic(err)
+		log.Fatal(err)
 	}
 	defer resp.Body.Close()
 	var data interface{}
 	e := json.NewDecoder(resp.Body).Decode(&data)
 	if e != nil {
-		panic(e)
+		log.Fatal(e)
 	}
 	dMap := data.(map[string]interface{})
 	sentence := dMap["sentence"].(string)
@@ -109,13 +110,13 @@ func getSentenceFromSelf() string {
 func getSentenceFromDevExcuses() string {
 	resp, err := http.Get("https://api.tabliss.io/v1/developer-excuses")
 	if err != nil {
-		panic(err)
+		log.Fatal(err)
 	}
 	defer resp.Body.Close()
 	var data interface{}
 	e := json.NewDecoder(resp.Body).Decode(&data)
 	if e != nil {
-		panic(e)
+		log.Fatal(e)
 	}
 	dMap := data.(map[string]interface{})
 	sentence := dMap["data"].(string)

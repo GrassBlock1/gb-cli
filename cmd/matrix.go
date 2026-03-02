@@ -8,18 +8,24 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"os"
+	"regexp"
 
 	"github.com/spf13/cobra"
 )
 
 // matrixCmd represents the matrix command
 var matrixCmd = &cobra.Command{
-	Use:   "matrix",
+	Use:   "matrix <domain>",
 	Short: "Get information of a matrix homeserver",
 	Long:  `Get a server domain behind a matrix homeserver and the software powers it`,
 	Args:  cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		domain := args[0]
+		if !isValidDomain(domain) {
+			fmt.Fprintln(os.Stderr, "Invalid domain format, please try again")
+			return
+		}
 		homeserver, software, version := getServerInfo(domain)
 		fmt.Printf("%s is behind %s, running %s (%s).", domain, homeserver, software, version)
 	},
@@ -37,6 +43,13 @@ func init() {
 	// Cobra supports local flags which will only run when this command
 	// is called directly, e.g.:
 	// matrixCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+}
+
+func isValidDomain(domain string) bool {
+	// Pattern matches basic domain format: name.extension or subdomain.name.extension
+	pattern := `^([a-zA-Z0-9]([a-zA-Z0-9\-]{0,61}[a-zA-Z0-9])?\.)+[a-zA-Z]{2,}$`
+	matched, _ := regexp.MatchString(pattern, domain)
+	return matched
 }
 
 func getServerInfo(domain string) (string, string, string) {

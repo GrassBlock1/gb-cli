@@ -32,7 +32,7 @@ Available Commands:
   help        Help about any command
   matrix      Get information of a matrix homeserver
   passwd      Generate a memorable secure password
-  rand        Get real random number from multiple sources
+  rand        Get 'true', verifiable random number from multiple sources
 
 Flags:
   -h, --help   help for gb

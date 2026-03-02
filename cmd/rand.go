@@ -1,8 +1,12 @@
 package cmd
 
 import (
+	"crypto/sha256"
+	"encoding/hex"
+	"encoding/json"
 	"fmt"
 	"log"
+	"math/rand/v2"
 	"net/http"
 	"os"
 	"strconv"
@@ -13,30 +17,53 @@ import (
 // randCmd represents the rand command
 var randCmd = &cobra.Command{
 	Use:   "rand",
-	Short: "Get real random number from multiple sources",
-	Long:  `Get real random number from random.org (default) / generate from drand / nist / qrng beacon`,
+	Short: "Get 'true', verifiable random number from multiple sources",
+	Long:  `Get 'true', verifiable random number from random.org (default) / generate from drand / nist / qrng beacon`,
 	Args:  cobra.MinimumNArgs(2),
 	Run: func(cmd *cobra.Command, args []string) {
-		min, err := strconv.Atoi(args[0])
-		if err != nil {
-			fmt.Fprintf(os.Stderr, "Error: ")
-			os.Exit(1)
-		}
-		max, err := strconv.Atoi(args[1])
-		if err != nil {
-			fmt.Fprintf(os.Stderr, "Error: ")
-			os.Exit(1)
-		}
-		if min >= max {
-			os.Exit(1)
-		}
-		num, err := getFromRandomOrg(min, max)
-		if err != nil {
-			fmt.Fprintf(os.Stderr, "Error: %v\n", err)
-			os.Exit(1)
-		}
+		if len(args) == 2 {
+			minN, err := strconv.Atoi(args[0])
+			if err != nil {
+				fmt.Fprintf(os.Stderr, "Error: invalid min value")
+				os.Exit(1)
+			}
+			maxN, err := strconv.Atoi(args[1])
+			if err != nil {
+				fmt.Fprintf(os.Stderr, "Error: invalid max value")
+				os.Exit(1)
+			}
+			if minN >= maxN {
+				os.Exit(1)
+			}
+			num, err := getFromRandomOrg(minN, maxN)
+			if err != nil {
+				fmt.Fprintf(os.Stderr, "Error: %v\n", err)
+				os.Exit(1)
+			}
 
-		fmt.Println(num)
+			fmt.Println(num)
+		} else if len(args) == 3 {
+			source := args[0]
+			seed, err := getRandomSeed(source)
+			if err != nil {
+				log.Fatal("error while getting seed:", err)
+			}
+			minN, err := strconv.Atoi(args[1])
+			if err != nil {
+				fmt.Fprintf(os.Stderr, "Error: invalid min value")
+				os.Exit(1)
+			}
+			maxN, err := strconv.Atoi(args[2])
+			if err != nil {
+				fmt.Fprintf(os.Stderr, "Error: invalid max value")
+				os.Exit(1)
+			}
+			if minN >= maxN {
+				os.Exit(1)
+			}
+			// TODO: also display the seed and other info
+			fmt.Println(getFromSeed(seed, minN, maxN))
+		}
 	},
 }
 
@@ -72,6 +99,66 @@ func getFromRandomOrg(min, max int) (int, error) {
 	return num, nil
 }
 
-//func getRandomSeed(from string) (string, error) {
-//
-//}
+func getRandomSeed(from string) (string, error) {
+	if from == "drand" {
+		resp, err := http.Get("https://api.drand.sh/public/latest")
+		if err != nil {
+			log.Fatal("Error getting random seed from drand", err)
+		}
+		defer resp.Body.Close()
+		if resp.StatusCode != 200 {
+			return "", fmt.Errorf("server not ok")
+		}
+		var data interface{}
+		e := json.NewDecoder(resp.Body).Decode(&data)
+		if e != nil {
+			log.Fatal("Error while parsing well-known JSON: ", e)
+		}
+		dataMap := data.(map[string]interface{})
+		return dataMap["randomness"].(string), nil
+	}
+	if from == "nist" {
+		resp, err := http.Get("https://beacon.nist.gov/beacon/2.0/pulse/last")
+		if err != nil {
+			log.Fatal("Error getting random seed from nist", err)
+		}
+		defer resp.Body.Close()
+		if resp.StatusCode != 200 {
+			return "", fmt.Errorf("server not ok")
+		}
+		var data interface{}
+		e := json.NewDecoder(resp.Body).Decode(&data)
+		if e != nil {
+			log.Fatal("Error while parsing well-known JSON: ", e)
+		}
+		dataMap := data.(map[string]interface{})
+		pulseMap := dataMap["pulse"].(map[string]interface{})
+		return pulseMap["outputValue"].(string), nil
+	}
+	if from == "qrng" {
+		resp, err := http.Get("https://qrng.anu.edu.au/wp-content/plugins/colours-plugin/get_block_alpha.php")
+		if err != nil {
+			log.Fatal("Error getting random seed from nist", err)
+		}
+		defer resp.Body.Close()
+		if resp.StatusCode != 200 {
+			return "", fmt.Errorf("server not ok")
+		}
+		var data string
+		_, e := fmt.Fscanf(resp.Body, "%s", &data)
+		if e != nil {
+			return "", err
+		}
+		return data, nil
+	}
+	return "", fmt.Errorf("error: unknown source")
+}
+
+func getFromSeed(seed string, min, max int) int {
+	seedBytes, _ := hex.DecodeString(seed)
+	h := sha256.Sum256(seedBytes)
+
+	// init as a seed
+	trueRand := rand.New(rand.NewChaCha8(h))
+	return trueRand.IntN(max-min+1) + min
+}

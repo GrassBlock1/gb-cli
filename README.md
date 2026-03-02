@@ -6,9 +6,12 @@ Soon I find that I can get some more knowledge upon Golang by coding on the tool
 ## Installation
 ```bash
 git clone https://git.gay/gb/gb
-go install .
+go install . # The binary will be in your $GOPATH/bin/gb, be sure to add it to your $PATH
 # or
 go build .
+mv ./gb ~/.local/bin/gb # or somewhere else in your $PATH
+# To make the binary smaller, try using some flags:
+go install -ldflags="-w -s" -gcflags=all=-l  .
 ```
 ## Usage
 ```

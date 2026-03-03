@@ -6,7 +6,6 @@ import (
 	"io"
 	"log"
 	"math/big"
-	"os"
 	"strconv"
 
 	"github.com/spf13/cobra"
@@ -17,6 +16,50 @@ var rngCmd = &cobra.Command{
 	Use:   "rng",
 	Short: "generate random number like fish",
 	Long:  `rng generates a cryptographically secure pseudo-random integer from a uniform distribution. It can be used like fish's internal function without seeding.`,
+	Args: func(cmd *cobra.Command, args []string) error {
+		switch len(args) {
+		case 0:
+			return nil
+		case 1:
+			if args[1] == "choice" {
+				return fmt.Errorf("no items to be selected")
+			}
+			return fmt.Errorf("seeding is not allowed here")
+		case 2:
+			_, errMin := strconv.Atoi(args[0])
+			if errMin != nil {
+				return fmt.Errorf("invalid minium value")
+			}
+			_, errMax := strconv.Atoi(args[1])
+			if errMax != nil {
+				return fmt.Errorf("invalid maximum value")
+			}
+			return nil
+		case 3:
+			if args[0] == "choice" {
+				return nil
+			}
+			_, errMin := strconv.Atoi(args[0])
+			if errMin != nil {
+				return fmt.Errorf("invalid minium value")
+			}
+			_, errStep := strconv.Atoi(args[1])
+			if errStep != nil {
+				return fmt.Errorf("invalid step value")
+			}
+			_, errMax := strconv.Atoi(args[2])
+			if errMax != nil {
+				return fmt.Errorf("invalid maximum value")
+			}
+			return nil
+		default:
+			if args[0] == "choice" {
+				return nil
+			}
+			return fmt.Errorf("too many arguments. see random in fish shell for usage")
+		}
+		return fmt.Errorf("unexpected arguments")
+	},
 	Run: func(cmd *cobra.Command, args []string) {
 		var Reader io.Reader = rand.Reader
 		switch len(args) {
@@ -26,23 +69,11 @@ var rngCmd = &cobra.Command{
 				log.Fatal(err)
 			}
 			fmt.Println(n)
-		case 1:
-			if args[1] == "choice" {
-				log.Fatal("Error: no items to be selected")
-			}
-			fmt.Println("Seeding is not allowed here")
-			os.Exit(1)
 		case 2:
-			minN, errMin := strconv.Atoi(args[0])
-			if errMin != nil {
-				log.Fatal("Error: invalid minium value")
-			}
-			maxN, errMax := strconv.Atoi(args[1])
-			if errMax != nil {
-				log.Fatal("Error: invalid maximum value")
-			}
+			minN, _ := strconv.Atoi(args[0])
+			maxN, _ := strconv.Atoi(args[1])
 			if minN >= maxN {
-				log.Fatal("Error: max value must be bigger than min value")
+				log.Fatal("max value must be bigger than min value")
 			}
 			rangeSize := maxN - minN + 1
 			result, err := rand.Int(Reader, big.NewInt(int64(rangeSize)))
@@ -58,18 +89,9 @@ var rngCmd = &cobra.Command{
 				}
 				fmt.Println(args[n.Int64()+1])
 			}
-			start, errMin := strconv.Atoi(args[0])
-			if errMin != nil {
-				log.Fatal("Error: invalid minium value")
-			}
-			step, errStep := strconv.Atoi(args[1])
-			if errStep != nil {
-				log.Fatal("Error: invalid step value")
-			}
-			end, errMax := strconv.Atoi(args[2])
-			if errMax != nil {
-				log.Fatal("Error: invalid maximum value")
-			}
+			start, _ := strconv.Atoi(args[0])
+			step, _ := strconv.Atoi(args[1])
+			end, _ := strconv.Atoi(args[2])
 			if step <= 0 {
 				log.Fatal("Error: step must be positive")
 			}

@@ -8,7 +8,6 @@ import (
 	"fmt"
 	"log"
 	"net/http"
-	"os"
 	"regexp"
 
 	"github.com/spf13/cobra"
@@ -19,13 +18,17 @@ var matrixCmd = &cobra.Command{
 	Use:   "matrix <domain>",
 	Short: "Get information of a matrix homeserver",
 	Long:  `Get a server domain behind a matrix homeserver and the software powers it`,
-	Args:  cobra.ExactArgs(1),
+	Args: func(cmd *cobra.Command, args []string) error {
+		if len(args) != 1 {
+			return fmt.Errorf("too many arguments")
+		} else if !isValidDomain(args[0]) {
+			return fmt.Errorf("invalid domain format")
+		} else {
+			return nil
+		}
+	},
 	Run: func(cmd *cobra.Command, args []string) {
 		domain := args[0]
-		if !isValidDomain(domain) {
-			fmt.Fprintln(os.Stderr, "Invalid domain format, please try again")
-			return
-		}
 		homeserver, software, version := getServerInfo(domain)
 		fmt.Printf("%s is behind %s, running %s (%s).", domain, homeserver, software, version)
 	},

@@ -20,6 +20,16 @@ var randCmd = &cobra.Command{
 	Use:   "rand",
 	Short: "Get 'true', verifiable random number from multiple sources",
 	Long:  `Get 'true', verifiable random number from random.org (default) / generate from drand / nist / qrng beacon`,
+	ValidArgsFunction: func(cmd *cobra.Command, args []string, toComplete string) ([]cobra.Completion, cobra.ShellCompDirective) {
+		if len(args) == 0 {
+			completion := []cobra.Completion{
+				cobra.CompletionWithDesc("drand", "use seed from drand.love"),
+				cobra.CompletionWithDesc("nist", "use seed from csrc.nist.gov beacon"),
+				cobra.CompletionWithDesc("qrng", "use seed from anu qrng")}
+			return completion, cobra.ShellCompDirectiveNoFileComp
+		}
+		return nil, cobra.ShellCompDirectiveNoFileComp
+	},
 	Args: func(cmd *cobra.Command, args []string) error {
 		if len(args) == 2 {
 			_, err := strconv.Atoi(args[0])

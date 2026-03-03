@@ -9,6 +9,7 @@ import (
 	"math/rand/v2"
 	"net/http"
 	"os"
+	"slices"
 	"strconv"
 
 	"github.com/spf13/cobra"
@@ -19,21 +20,40 @@ var randCmd = &cobra.Command{
 	Use:   "rand",
 	Short: "Get 'true', verifiable random number from multiple sources",
 	Long:  `Get 'true', verifiable random number from random.org (default) / generate from drand / nist / qrng beacon`,
-	Args:  cobra.MinimumNArgs(2),
+	Args: func(cmd *cobra.Command, args []string) error {
+		if len(args) == 2 {
+			_, err := strconv.Atoi(args[0])
+			if err != nil {
+				return fmt.Errorf("invalid min value")
+			}
+			_, errMax := strconv.Atoi(args[1])
+			if errMax != nil {
+				return fmt.Errorf("invalid max value")
+			}
+			return nil
+		} else if len(args) == 3 {
+			methods := []string{"drand", "nist", "qrng"}
+			if !slices.Contains(methods, args[0]) {
+				return fmt.Errorf("invalid method")
+			}
+			_, err := strconv.Atoi(args[1])
+			if err != nil {
+				return fmt.Errorf("invalid min value")
+			}
+			_, errMax := strconv.Atoi(args[2])
+			if errMax != nil {
+				return fmt.Errorf("invalid max value")
+			}
+			return nil
+		}
+		return fmt.Errorf("unexpected arguments")
+	},
 	Run: func(cmd *cobra.Command, args []string) {
 		if len(args) == 2 {
-			minN, err := strconv.Atoi(args[0])
-			if err != nil {
-				fmt.Fprintf(os.Stderr, "Error: invalid min value")
-				os.Exit(1)
-			}
-			maxN, err := strconv.Atoi(args[1])
-			if err != nil {
-				fmt.Fprintf(os.Stderr, "Error: invalid max value")
-				os.Exit(1)
-			}
+			minN, _ := strconv.Atoi(args[0])
+			maxN, _ := strconv.Atoi(args[1])
 			if minN >= maxN {
-				os.Exit(1)
+				log.Fatal("Error: min value must be bigger than max value")
 			}
 			num, err := getFromRandomOrg(minN, maxN)
 			if err != nil {
@@ -48,18 +68,10 @@ var randCmd = &cobra.Command{
 			if err != nil {
 				log.Fatal("error while getting seed:", err)
 			}
-			minN, err := strconv.Atoi(args[1])
-			if err != nil {
-				fmt.Fprintf(os.Stderr, "Error: invalid min value")
-				os.Exit(1)
-			}
-			maxN, err := strconv.Atoi(args[2])
-			if err != nil {
-				fmt.Fprintf(os.Stderr, "Error: invalid max value")
-				os.Exit(1)
-			}
+			minN, _ := strconv.Atoi(args[1])
+			maxN, _ := strconv.Atoi(args[2])
 			if minN >= maxN {
-				os.Exit(1)
+				log.Fatal("Error: min value must be bigger than max value")
 			}
 			// TODO: also display the seed and other info
 			fmt.Println(getFromSeed(seed, minN, maxN))

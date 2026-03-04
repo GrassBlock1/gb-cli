@@ -17,6 +17,7 @@ var rootCmd = &cobra.Command{
 		if err != nil {
 			return
 		}
+		fmt.Println("\t\t\t\tThis cli has Super Repulsive Powers.")
 	},
 }
 

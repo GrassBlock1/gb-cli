@@ -58,7 +58,6 @@ var rngCmd = &cobra.Command{
 			}
 			return fmt.Errorf("too many arguments. see random in fish shell for usage")
 		}
-		return fmt.Errorf("unexpected arguments")
 	},
 	Run: func(cmd *cobra.Command, args []string) {
 		var Reader io.Reader = rand.Reader

@@ -23,9 +23,8 @@ var matrixCmd = &cobra.Command{
 			return fmt.Errorf("too many arguments")
 		} else if !isValidDomain(args[0]) {
 			return fmt.Errorf("invalid domain format")
-		} else {
-			return nil
 		}
+		return nil
 	},
 	Run: func(cmd *cobra.Command, args []string) {
 		domain := args[0]

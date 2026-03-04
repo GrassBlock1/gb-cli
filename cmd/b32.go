@@ -12,7 +12,7 @@ import (
 var b32Cmd = &cobra.Command{
 	Use:   "b32",
 	Short: "Encode/decode base32 string",
-	Long:  `A basic base64 decoder/encoder, which takes a string as a argument`,
+	Long:  `A basic base32 decoder/encoder, which takes a string as a argument`,
 	Args:  cobra.MinimumNArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		input := strings.Join(args, " ")

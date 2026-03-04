@@ -16,6 +16,7 @@ go install -ldflags="-w -s" -gcflags=all=-l  .
 ## Usage
 ```
 ➜ gb
+
 gb is a cli tool for everyday tasks - base32/64/85 encoding/decoding, getting quotes, etc
 
 Usage:
@@ -32,10 +33,14 @@ Available Commands:
   help        Help about any command
   matrix      Get information of a matrix homeserver
   passwd      Generate a memorable secure password
+  portable    Make any program run like a portable one (Linux only)
   rand        Get 'true', verifiable random number from multiple sources
+  rng         generate random number like fish
+  version     Prints the version and more info
 
 Flags:
-  -h, --help   help for gb
+  -h, --help      help for gb
+  -v, --version   version for gb
 
 Use "gb [command] --help" for more information about a command.
 ```

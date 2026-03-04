@@ -47,6 +47,6 @@ Use "gb [command] --help" for more information about a command.
 ## Notes
 `gb` is originally named as an abbreviation for my nickname on the Internet, but it can be anything, at least I think so.
 
-You may also find this tool at [codeberg](https://codeberg.org/grassblock/gb) and [GitHub](https://github.com/GrassBlock1/gb).
+You may also find this tool at [codeberg](https://codeberg.org/grassblock/gb-cli) and [GitHub](https://github.com/GrassBlock1/gb-cli).
 ## License
 This tool is under [Mozilla Public License, Version 2.0](https://www.mozilla.org/en-US/MPL/), see [LICENSE file](./LICENSE) for details.

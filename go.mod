@@ -1,4 +1,4 @@
-module git.gay/gb/gb
+module gb0.dev/g/cli/gb
 
 go 1.25.0
 

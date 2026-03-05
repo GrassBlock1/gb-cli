@@ -10,7 +10,7 @@ import (
 	"io/ioutil"
 	"os"
 
-	"git.gay/gb/gb/internal/bf/stack"
+	"gb0.dev/g/cli/gb/internal/bf/stack"
 )
 
 func bf_jumps(prog []byte) (map[uint]uint, error) {

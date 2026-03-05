@@ -1,7 +1,7 @@
 package cmd
 
 import (
-	"git.gay/gb/gb/internal/bf"
+	"gb0.dev/g/cli/gb/internal/bf"
 	"log"
 	"os"
 	"strings"

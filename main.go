@@ -1,7 +1,7 @@
 package main
 
 import (
-	"git.gay/gb/gb/cmd"
+	"gb0.dev/g/cli/gb/cmd"
 )
 
 func main() {

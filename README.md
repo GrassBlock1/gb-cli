@@ -4,6 +4,15 @@ I wanted to decode base* strings directly without using `echo`, so I created thi
 
 Soon I find that I can get some more knowledge upon Golang by coding on the tool, so I started to create more subcommands for my usage. And I tried to create this tool without any what is called "vibe coding", only with the help of search and chatbots. I make sure I understand most of the code when I do a copy-paste.
 ## Installation
+### Automatic
+```bash
+# use go install
+go install gb0.dev/g/cli/gb
+# or use a script
+curl https://gb0.dev/g/cli/gb | bash 
+# The binary will be in your $GOPATH/bin/gb, be sure to add it to your $PATH
+```
+### Manually
 ```bash
 git clone https://git.gay/gb/gb
 go install . # The binary will be in your $GOPATH/bin/gb, be sure to add it to your $PATH

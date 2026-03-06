@@ -21,8 +21,8 @@ var rngCmd = &cobra.Command{
 		case 0:
 			return nil
 		case 1:
-			if args[1] == "choice" {
-				return fmt.Errorf("no items to be selected")
+			if args[0] == "choice" {
+				return fmt.Errorf("nothing to choose from")
 			}
 			return fmt.Errorf("seeding is not allowed here")
 		case 2:

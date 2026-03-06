@@ -26,6 +26,9 @@ var rngCmd = &cobra.Command{
 			}
 			return fmt.Errorf("seeding is not allowed here")
 		case 2:
+			if args[0] == "choice" {
+				return nil
+			}
 			_, errMin := strconv.Atoi(args[0])
 			if errMin != nil {
 				return fmt.Errorf("invalid minium value")
@@ -69,6 +72,10 @@ var rngCmd = &cobra.Command{
 			}
 			fmt.Println(n)
 		case 2:
+			if args[0] == "choice" {
+				fmt.Println(args[1])
+				return
+			}
 			minN, _ := strconv.Atoi(args[0])
 			maxN, _ := strconv.Atoi(args[1])
 			if minN >= maxN {
